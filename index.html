@@ -42,21 +42,23 @@
       return a * b;
     }
 
-    function computeHistogram(data) {
+    function computeHistogram(data, bins = 30) {
       const min = Math.min(...data);
       const max = Math.max(...data);
-      const range = max - min + 1;
-      const bins = Array.from({ length: range }, (_, i) => min + i);
-      const counts = Array(range).fill(0);
+      const binWidth = (max - min) / bins;
+      const counts = Array(bins).fill(0);
+      const binCenters = [];
 
       data.forEach(x => {
-        const index = Math.floor(x - min);
-        if (index >= 0 && index < range) {
-          counts[index]++;
-        }
+        const i = Math.min(Math.floor((x - min) / binWidth), bins - 1);
+        counts[i]++;
       });
 
-      return { counts, binCenters: bins, min, max };
+      for (let i = 0; i < bins; i++) {
+        binCenters.push(min + (i + 0.5) * binWidth);
+      }
+
+      return { counts, binCenters, binWidth };
     }
 
     let chart;
@@ -74,11 +76,11 @@
 
         const mu = mean(values);
         const sigma = std(values, mu);
-        const { counts, binCenters } = computeHistogram(values);
+        const { counts, binCenters, binWidth } = computeHistogram(values);
 
         const total = values.length;
         const normalizedCounts = counts.map(c => c / total);
-        const normalValues = binCenters.map(x => normalPDF(x, mu, sigma));
+        const normalValues = binCenters.map(x => normalPDF(x, mu, sigma) * binWidth);
 
         const summaryText = `Samples: ${values.length}\nMean: ${mu.toFixed(4)}\nStandard Deviation: ${sigma.toFixed(4)}\n\nFirst 10 values:\n${values.slice(0, 10).map(v => v.toFixed(4)).join(", ")}`;
         document.getElementById("summary").textContent = summaryText;
@@ -88,7 +90,7 @@
         chart = new Chart(ctx, {
           type: "bar",
           data: {
-            labels: binCenters,
+            labels: binCenters.map(x => x.toFixed(2)),
             datasets: [
               {
                 label: "Observed Frequency",
