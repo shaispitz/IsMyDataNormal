@@ -41,7 +41,8 @@
 </head>
 <body class="text-gray-800">
   
-    <div class="text-sm text-gray-700 bg-blue-50 border border-blue-200 p-4 rounded mb-6">
+    <h1 class="text-4xl font-extrabold mb-4 text-center text-blue-700">Is My Data Normal?</h1>
+
       <p><strong>KL Divergence</strong> measures the difference between your data's distribution and a normal distribution with the same mean and standard deviation.</p>
       <p>Lower values indicate your data is closer to normal.</p>
       <ul class="list-disc list-inside mt-3 text-sm">
@@ -55,10 +56,12 @@
     <div class="flex justify-center">
       <input type="file" id="fileInput" accept=".csv" class="block w-full text-sm text-gray-700 border border-gray-300 rounded-md cursor-pointer" />
     </div>
-    <div id="summary" class="mt-6 text-left text-sm whitespace-pre-line font-mono bg-gray-50 p-4 rounded"></div>
+    <h2 class="text-xl font-semibold mt-10 mb-2 text-gray-700">Results</h2>
+</div>
     <div id="result" class="mt-4 text-center text-lg font-semibold"></div>
     <div class="overflow-x-auto">
-      <canvas id="histogram" class="mt-6"></canvas>
+      <h2 class="text-xl font-semibold mt-10 mb-2 text-gray-700">Distribution Histogram</h2>
+
     </div>
     <div class="text-center mt-6">
       <button id="resetButton" class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded shadow-sm hover:shadow-md">Reset</button>
