@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Is My Data Normal?</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #f8f8f8;
+      margin: 0;
+      padding: 2em;
+      text-align: center;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 2em;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    input[type="file"] {
+      margin-top: 1em;
+    }
+    .result {
+      margin-top: 2em;
+      font-size: 1.2em;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Is My Data Normal?</h1>
+    <p>Upload a CSV file with a single column of numbers.<br/>We’ll calculate KL Divergence from a normal distribution.</p>
+
+    <input type="file" id="fileInput" accept=".csv"/>
+    <div class="result" id="result"></div>
+  </div>
+
+  <script>
+    function parseCSV(text) {
+      const lines = text.trim().split("\n");
+      return lines.map(Number).filter(x => !isNaN(x));
+    }
+
+    function mean(arr) {
+      return arr.reduce((a, b) => a + b, 0) / arr.length;
+    }
+
+    function std(arr, mu) {
+      return Math.sqrt(arr.reduce((a, b) => a + (b - mu) ** 2, 0) / arr.length);
+    }
+
+    function normalPDF(x, mu, sigma) {
+      const a = 1 / (sigma * Math.sqrt(2 * Math.PI));
+      const b = Math.exp(-((x - mu) ** 2) / (2 * sigma ** 2));
+      return a * b;
+    }
+
+    function klDivergence(data, mu, sigma) {
+      const min = Math.min(...data);
+      const max = Math.max(...data);
+      const bins = 100;
+      const binWidth = (max - min) / bins;
+
+      const counts = Array(bins).fill(0);
+      data.forEach(x => {
+        const i = Math.min(Math.floor((x - min) / binWidth), bins - 1);
+        counts[i]++;
+      });
+
+      const total = data.length;
+      const p = counts.map(c => c / total);
+
+      const q = counts.map((_, i) => {
+        const x = min + (i + 0.5) * binWidth;
+        return normalPDF(x, mu, sigma);
+      });
+
+      let kl = 0;
+      for (let i = 0; i < bins; i++) {
+        if (p[i] > 0 && q[i] > 0) {
+          kl += p[i] * Math.log(p[i] / q[i]);
+        }
+      }
+
+      return kl;
+    }
+
+    document.getElementById("fileInput").addEventListener("change", (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const values = parseCSV(e.target.result);
+        if (values.length < 2) {
+          document.getElementById("result").textContent = "Not enough valid data.";
+          return;
+        }
+
+        const mu = mean(values);
+        const sigma = std(values, mu);
+        const kl = klDivergence(values, mu, sigma);
+        document.getElementById("result").textContent = `KL Divergence from normal: ${kl.toFixed(4)}`;
+      };
+      reader.readAsText(file);
+    });
+  </script>
+</body>
+</html>
