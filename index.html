@@ -14,7 +14,8 @@
     <div class="flex justify-center">
       <input type="file" id="fileInput" accept=".csv" class="block w-full text-sm text-gray-600 border border-gray-300 rounded-md cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
     </div>
-    <div id="result" class="mt-6 text-center text-lg font-semibold"></div>
+    <div id="summary" class="mt-6 text-left text-sm whitespace-pre-line"></div>
+    <div id="result" class="mt-4 text-center text-lg font-semibold"></div>
     <canvas id="histogram" class="mt-6"></canvas>
     <div class="text-center mt-6">
       <button id="resetButton" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">Reset</button>
@@ -87,7 +88,10 @@
         const sigma = std(values, mu);
         const { kl, counts, min, max } = klDivergence(values, mu, sigma);
 
-        document.getElementById("result").textContent = `KL Divergence from normal: ${kl.toFixed(4)}`;
+        const summaryText = `Samples: ${values.length}\nMean: ${mu.toFixed(4)}\nStandard Deviation: ${sigma.toFixed(4)}\nKL Divergence: ${kl.toFixed(4)}\n\nFirst 10 values:\n${values.slice(0, 10).map(v => v.toFixed(4)).join(", ")}`;
+        document.getElementById("summary").textContent = summaryText;
+
+        document.getElementById("result").textContent = "";
 
         const labels = Array.from({ length: counts.length }, (_, i) => (min + (i + 0.5) * ((max - min) / counts.length)).toFixed(2));
 
@@ -117,6 +121,7 @@
     document.getElementById("resetButton").addEventListener("click", () => {
       document.getElementById("fileInput").value = null;
       document.getElementById("result").textContent = "";
+      document.getElementById("summary").textContent = "";
       if (chart) chart.destroy();
     });
   </script>
