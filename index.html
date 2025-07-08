@@ -2,41 +2,23 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Is My Data Normal?</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      background-color: #f8f8f8;
-      margin: 0;
-      padding: 2em;
-      text-align: center;
-    }
-    .container {
-      max-width: 600px;
-      margin: auto;
-      background: white;
-      padding: 2em;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    input[type="file"] {
-      margin-top: 1em;
-    }
-    .result {
-      margin-top: 2em;
-      font-size: 1.2em;
-      color: #333;
-    }
-  </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-  <div class="container">
-    <h1>Is My Data Normal?</h1>
-    <p>Upload a CSV file with a single column of numbers.<br/>We’ll calculate KL Divergence from a normal distribution.</p>
-
-    <input type="file" id="fileInput" accept=".csv"/>
-    <div class="result" id="result"></div>
+<body class="bg-gray-100 text-gray-800">
+  <div class="max-w-xl mx-auto mt-10 p-6 bg-white rounded-2xl shadow-xl">
+    <h1 class="text-3xl font-bold mb-4 text-center">Is My Data Normal?</h1>
+    <p class="text-center mb-6">Upload a CSV file with a single column of numbers. We’ll compute the KL Divergence from a normal distribution.</p>
+    <div class="flex justify-center">
+      <input type="file" id="fileInput" accept=".csv" class="block w-full text-sm text-gray-600 border border-gray-300 rounded-md cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+    </div>
+    <div id="result" class="mt-6 text-center text-lg font-semibold"></div>
+    <canvas id="histogram" class="mt-6"></canvas>
+    <div class="text-center mt-6">
+      <button id="resetButton" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">Reset</button>
+    </div>
   </div>
 
   <script>
@@ -62,7 +44,7 @@
     function klDivergence(data, mu, sigma) {
       const min = Math.min(...data);
       const max = Math.max(...data);
-      const bins = 100;
+      const bins = 50;
       const binWidth = (max - min) / bins;
 
       const counts = Array(bins).fill(0);
@@ -73,7 +55,6 @@
 
       const total = data.length;
       const p = counts.map(c => c / total);
-
       const q = counts.map((_, i) => {
         const x = min + (i + 0.5) * binWidth;
         return normalPDF(x, mu, sigma);
@@ -86,9 +67,10 @@
         }
       }
 
-      return kl;
+      return { kl, counts, min, max };
     }
 
+    let chart;
     document.getElementById("fileInput").addEventListener("change", (event) => {
       const file = event.target.files[0];
       if (!file) return;
@@ -103,10 +85,39 @@
 
         const mu = mean(values);
         const sigma = std(values, mu);
-        const kl = klDivergence(values, mu, sigma);
+        const { kl, counts, min, max } = klDivergence(values, mu, sigma);
+
         document.getElementById("result").textContent = `KL Divergence from normal: ${kl.toFixed(4)}`;
+
+        const labels = Array.from({ length: counts.length }, (_, i) => (min + (i + 0.5) * ((max - min) / counts.length)).toFixed(2));
+
+        const ctx = document.getElementById("histogram").getContext("2d");
+        if (chart) chart.destroy();
+        chart = new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels,
+            datasets: [{
+              label: "Normalized Frequency",
+              data: counts.map(c => c / values.length),
+              backgroundColor: "rgba(54, 162, 235, 0.6)",
+            }]
+          },
+          options: {
+            scales: {
+              x: { title: { display: true, text: "Value" } },
+              y: { title: { display: true, text: "Frequency" } }
+            }
+          }
+        });
       };
       reader.readAsText(file);
+    });
+
+    document.getElementById("resetButton").addEventListener("click", () => {
+      document.getElementById("fileInput").value = null;
+      document.getElementById("result").textContent = "";
+      if (chart) chart.destroy();
     });
   </script>
 </body>
