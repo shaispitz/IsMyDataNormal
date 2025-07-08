@@ -58,7 +58,21 @@
         binCenters.push(min + (i + 0.5) * binWidth);
       }
 
-      return { counts, binCenters, binWidth };
+      return { counts, binCenters, binWidth, min, max };
+    }
+
+    function klDivergence(data, mu, sigma, binCenters, binWidth, counts) {
+      const total = data.length;
+      const p = counts.map(c => c / total);
+      const q = binCenters.map(x => normalPDF(x, mu, sigma) * binWidth);
+
+      let kl = 0;
+      for (let i = 0; i < p.length; i++) {
+        if (p[i] > 0 && q[i] > 0) {
+          kl += p[i] * Math.log(p[i] / q[i]);
+        }
+      }
+      return kl;
     }
 
     let chart;
@@ -82,7 +96,9 @@
         const normalizedCounts = counts.map(c => c / total);
         const normalValues = binCenters.map(x => normalPDF(x, mu, sigma) * binWidth);
 
-        const summaryText = `Samples: ${values.length}\nMean: ${mu.toFixed(4)}\nStandard Deviation: ${sigma.toFixed(4)}\n\nFirst 10 values:\n${values.slice(0, 10).map(v => v.toFixed(4)).join(", ")}`;
+        const kl = klDivergence(values, mu, sigma, binCenters, binWidth, counts);
+
+        const summaryText = `Samples: ${values.length}\nMean: ${mu.toFixed(4)}\nStandard Deviation: ${sigma.toFixed(4)}\nKL Divergence: ${kl.toFixed(4)}\n\nFirst 10 values:\n${values.slice(0, 10).map(v => v.toFixed(4)).join(", ")}`;
         document.getElementById("summary").textContent = summaryText;
 
         const ctx = document.getElementById("histogram").getContext("2d");
