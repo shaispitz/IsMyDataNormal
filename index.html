@@ -42,33 +42,20 @@
       return a * b;
     }
 
-    function klDivergence(data, mu, sigma) {
+    function computeHistogram(data, bins = 50) {
       const min = Math.min(...data);
       const max = Math.max(...data);
-      const bins = 50;
       const binWidth = (max - min) / bins;
-
       const counts = Array(bins).fill(0);
+
       data.forEach(x => {
         const i = Math.min(Math.floor((x - min) / binWidth), bins - 1);
         counts[i]++;
       });
 
-      const total = data.length;
-      const p = counts.map(c => c / total);
-      const q = counts.map((_, i) => {
-        const x = min + (i + 0.5) * binWidth;
-        return normalPDF(x, mu, sigma);
-      });
+      const binCenters = Array.from({ length: bins }, (_, i) => min + (i + 0.5) * binWidth);
 
-      let kl = 0;
-      for (let i = 0; i < bins; i++) {
-        if (p[i] > 0 && q[i] > 0) {
-          kl += p[i] * Math.log(p[i] / q[i]);
-        }
-      }
-
-      return { kl, counts, min, max };
+      return { counts, binCenters, binWidth, min, max };
     }
 
     let chart;
@@ -86,31 +73,43 @@
 
         const mu = mean(values);
         const sigma = std(values, mu);
-        const { kl, counts, min, max } = klDivergence(values, mu, sigma);
+        const { counts, binCenters, binWidth } = computeHistogram(values);
 
-        const summaryText = `Samples: ${values.length}\nMean: ${mu.toFixed(4)}\nStandard Deviation: ${sigma.toFixed(4)}\nKL Divergence: ${kl.toFixed(4)}\n\nFirst 10 values:\n${values.slice(0, 10).map(v => v.toFixed(4)).join(", ")}`;
+        const total = values.length;
+        const normalizedCounts = counts.map(c => c / total);
+        const normalValues = binCenters.map(x => normalPDF(x, mu, sigma) * binWidth);
+
+        const summaryText = `Samples: ${values.length}\nMean: ${mu.toFixed(4)}\nStandard Deviation: ${sigma.toFixed(4)}\n\nFirst 10 values:\n${values.slice(0, 10).map(v => v.toFixed(4)).join(", ")}`;
         document.getElementById("summary").textContent = summaryText;
-
-        document.getElementById("result").textContent = "";
-
-        const labels = Array.from({ length: counts.length }, (_, i) => (min + (i + 0.5) * ((max - min) / counts.length)).toFixed(2));
 
         const ctx = document.getElementById("histogram").getContext("2d");
         if (chart) chart.destroy();
         chart = new Chart(ctx, {
           type: "bar",
           data: {
-            labels,
-            datasets: [{
-              label: "Normalized Frequency",
-              data: counts.map(c => c / values.length),
-              backgroundColor: "rgba(54, 162, 235, 0.6)",
-            }]
+            labels: binCenters.map(x => x.toFixed(2)),
+            datasets: [
+              {
+                label: "Observed Frequency",
+                data: normalizedCounts,
+                backgroundColor: "rgba(54, 162, 235, 0.6)",
+              },
+              {
+                type: "line",
+                label: "Normal Distribution",
+                data: normalValues,
+                borderColor: "rgba(255, 99, 132, 1)",
+                backgroundColor: "rgba(255, 99, 132, 0.1)",
+                fill: false,
+                tension: 0.2,
+                pointRadius: 0
+              }
+            ]
           },
           options: {
             scales: {
               x: { title: { display: true, text: "Value" } },
-              y: { title: { display: true, text: "Frequency" } }
+              y: { title: { display: true, text: "Density" } }
             }
           }
         });
