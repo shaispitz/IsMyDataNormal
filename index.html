@@ -132,7 +132,39 @@
 
         const kl = klDivergence(values, mu, sigma, binCenters, binWidth, counts);
 
-        const summaryText = `Samples: ${values.length}\nMean: ${mu.toFixed(4)}\nStandard Deviation: ${sigma.toFixed(4)}\nKL Divergence: ${kl.toFixed(4)}\n\nFirst 10 values:\n${values.slice(0, 10).map(v => v.toFixed(4)).join(", ")}`;
+        const percentiles = [10, 20, 30, 40, 50, 60, 70, 80, 90].map(p => {
+  const sorted = [...values].sort((a, b) => a - b);
+  const index = Math.floor(p / 100 * (sorted.length - 1));
+  return `${p}th: ${sorted[index].toFixed(4)}`;
+}).join("
+");
+
+const sorted = [...values].sort((a, b) => a - b);
+const percentiles = [10, 20, 30, 40, 50, 60, 70, 80, 90].map(p => {
+  const index = Math.floor(p / 100 * (sorted.length - 1));
+  return `${p}th: ${sorted[index].toFixed(4)}`;
+}).join("
+");
+const min = sorted[0].toFixed(4);
+const max = sorted[sorted.length - 1].toFixed(4);
+const q1 = sorted[Math.floor(0.25 * (sorted.length - 1))].toFixed(4);
+const q3 = sorted[Math.floor(0.75 * (sorted.length - 1))].toFixed(4);
+
+const summaryText = `Samples: ${values.length}
+Mean: ${mu.toFixed(4)}
+Standard Deviation: ${sigma.toFixed(4)}
+KL Divergence: ${kl.toFixed(4)}
+
+Percentiles:
+${percentiles}
+
+Min: ${min}
+Max: ${max}
+Q1: ${q1}
+Q3: ${q3}
+
+First 10 values:
+${values.slice(0, 10).map(v => v.toFixed(4)).join(", ")}`;
         document.getElementById("summary").textContent = summaryText;
 
         const ctx = document.getElementById("histogram").getContext("2d");
