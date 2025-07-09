@@ -159,6 +159,15 @@ const max = sorted[sorted.length - 1].toFixed(4);
 const q1 = getPercentile(sorted, 25).toFixed(4);
 const q3 = getPercentile(sorted, 75).toFixed(4);
 
+const sorted = [...values].sort((a, b) => a - b);
+const getPercentile = (arr, p) => arr[Math.floor(p / 100 * (arr.length - 1))];
+const percentiles = [10, 20, 30, 40, 50, 60, 70, 80, 90].map(p => `${p}th: ${getPercentile(sorted, p).toFixed(4)}`).join("
+");
+const min = sorted[0].toFixed(4);
+const max = sorted[sorted.length - 1].toFixed(4);
+const q1 = getPercentile(sorted, 25).toFixed(4);
+const q3 = getPercentile(sorted, 75).toFixed(4);
+
 const summaryText = `Samples: ${values.length}
 Mean: ${mu.toFixed(4)}
 Standard Deviation: ${sigma.toFixed(4)}
