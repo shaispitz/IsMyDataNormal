@@ -115,6 +115,7 @@
       if (!file) return;
 
       const reader = new FileReader();
+      const getPercentile = (arr, p) => arr[Math.floor(p / 100 * (arr.length - 1))];
       reader.onload = (e) => {
         const values = parseCSV(e.target.result);
         if (values.length < 2) {
@@ -149,6 +150,14 @@ const min = sorted[0].toFixed(4);
 const max = sorted[sorted.length - 1].toFixed(4);
 const q1 = sorted[Math.floor(0.25 * (sorted.length - 1))].toFixed(4);
 const q3 = sorted[Math.floor(0.75 * (sorted.length - 1))].toFixed(4);
+
+const sorted = [...values].sort((a, b) => a - b);
+const percentiles = [10, 20, 30, 40, 50, 60, 70, 80, 90].map(p => `${p}th: ${getPercentile(sorted, p).toFixed(4)}`).join("
+");
+const min = sorted[0].toFixed(4);
+const max = sorted[sorted.length - 1].toFixed(4);
+const q1 = getPercentile(sorted, 25).toFixed(4);
+const q3 = getPercentile(sorted, 75).toFixed(4);
 
 const summaryText = `Samples: ${values.length}
 Mean: ${mu.toFixed(4)}
