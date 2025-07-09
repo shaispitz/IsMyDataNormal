@@ -166,7 +166,9 @@
         const xMin = Math.min(xMinOption1, dataMin);
         const xMax = Math.max(xMaxOption1, dataMax);
 
-        const { counts, binCenters, binWidth } = computeHistogram(values, 30, xMin, xMax);
+        const histMin = Math.min(dataMin, mu - 4 * sigma);
+        const histMax = Math.max(dataMax, mu + 4 * sigma);
+        const { counts, binCenters, binWidth } = computeHistogram(values, 30, histMin, histMax);
         const total = values.length;
         const normalizedCounts = counts.map(c => c / total);
         const normalValues = binCenters.map(x => normalPDF(x, mu, sigma) * binWidth);
@@ -223,8 +225,8 @@ ${values.slice(0, 10).map(v => v.toFixed(4)).join(", ")}`;
             scales: {
               x: {
                 title: { display: true, text: "Value" },
-                min: xMin,
-                max: xMax
+                min: histMin,
+                max: histMax
               },
               y: {
                 title: { display: true, text: "Density" },
