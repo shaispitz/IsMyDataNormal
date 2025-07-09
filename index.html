@@ -145,7 +145,7 @@
 
         const kl = klDivergence(values, mu, sigma, binCenters, binWidth, counts);
 
-        const summaryText = Samples: ${values.length}\nMean: ${mu.toFixed(4)}\nStandard Deviation: ${sigma.toFixed(4)}\nKL Divergence: ${kl.toFixed(4)}\n\nFirst 10 values:\n${values.slice(0, 10).map(v => v.toFixed(4)).join(", ")};
+        const summaryText = `Samples: ${values.length}\nMean: ${mu.toFixed(4)}\nStandard Deviation: ${sigma.toFixed(4)}\nKL Divergence: ${kl.toFixed(4)}\n\nFirst 10 values:\n${values.slice(0, 10).map(v => v.toFixed(4)).join(", ")}`;
         document.getElementById("summary").textContent = summaryText;
 
         const ctx = document.getElementById("histogram").getContext("2d");
