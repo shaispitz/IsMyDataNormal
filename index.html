@@ -166,8 +166,8 @@
         const xMin = Math.min(xMinOption1, dataMin);
         const xMax = Math.max(xMaxOption1, dataMax);
 
-        const histMin = Math.min(dataMin, mu - 4 * sigma);
-        const histMax = Math.max(dataMax, mu + 4 * sigma);
+        const histMin = Math.min(mu - 4 * sigma, dataMin);
+        const histMax = Math.max(mu + 4 * sigma, dataMax);
         const { counts, binCenters, binWidth } = computeHistogram(values, 30, histMin, histMax);
         const total = values.length;
         const normalizedCounts = counts.map(c => c / total);
