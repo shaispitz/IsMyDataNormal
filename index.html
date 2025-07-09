@@ -42,7 +42,6 @@
   </style>
 </head>
 <body class="text-gray-800">
-
   <div class="max-w-2xl mx-auto mt-12 card">
     <h1 class="text-4xl font-extrabold mb-4 text-center text-blue-700">Is My Data Normal?</h1>
     <p><strong>KL Divergence</strong> (Kullback–Leibler Divergence) measures the difference between two probability density functions. In this case, we compare the empirical distribution of your data to a <em>normal distribution</em> with the same mean and standard deviation.</p>
@@ -165,6 +164,13 @@
         const normalMax = Math.max(...normalValues);
         const kl = klDivergence(values, mu, sigma, binCenters, binWidth, counts);
 
+        const xMaxOption1 = mu + 4 * sigma;
+        const xMinOption1 = mu - 4 * sigma;
+        const dataMin = Math.min(...values);
+        const dataMax = Math.max(...values);
+        const xMin = Math.min(xMinOption1, dataMin);
+        const xMax = Math.max(xMaxOption1, dataMax);
+
         const p10 = percentile(values, 10);
         const p25 = percentile(values, 25);
         const p50 = percentile(values, 50);
@@ -213,7 +219,11 @@ ${values.slice(0, 10).map(v => v.toFixed(4)).join(", ")}`;
           },
           options: {
             scales: {
-              x: { title: { display: true, text: "Value" } },
+              x: {
+                title: { display: true, text: "Value" },
+                min: xMin,
+                max: xMax
+              },
               y: {
                 title: { display: true, text: "Density" },
                 suggestedMax: normalMax * 1.1
@@ -237,8 +247,8 @@ ${values.slice(0, 10).map(v => v.toFixed(4)).join(", ")}`;
               padding: 10,
               itemRadius: 0,
               data: [{
-                min: Math.min(...values),
-                max: Math.max(...values),
+                min: dataMin,
+                max: dataMax,
                 q1: p25,
                 median: p50,
                 q3: p75
