@@ -40,12 +40,25 @@
   </style>
 </head>
 <body class="text-gray-800">
+  
   <div class="max-w-2xl mx-auto mt-12 card">
     <h1 class="text-4xl font-extrabold mb-4 text-center text-blue-700">Is My Data Normal?</h1>
+
+      <p><strong>KL Divergence</strong> measures the difference between your data's distribution and a normal distribution with the same mean and standard deviation.</p>
+      <p>Lower values indicate your data is closer to normal.</p>
+      <ul class="list-disc list-inside mt-3 text-sm">
+        <li><strong>&lt; 0.1</strong>: Very close to normal</li>
+        <li><strong>0.1 - 0.5</strong>: Reasonably normal</li>
+        <li><strong>0.5 - 1.0</strong>: Noticeable deviation</li>
+        <li><strong>&gt; 1.0</strong>: Strong deviation from normal</li>
+      </ul>
+    </div>
     <p class="text-center text-lg text-gray-600 mb-6">Upload a CSV file with a single column of numbers. We’ll compute the KL Divergence from a normal distribution.</p>
     <div class="flex justify-center">
       <input type="file" id="fileInput" accept=".csv" class="block w-full text-sm text-gray-700 border border-gray-300 rounded-md cursor-pointer" />
     </div>
+    <h2 class="text-xl font-semibold mt-10 mb-2 text-gray-700">Results</h2>
+</div>
     <div id="summary" class="mt-6 text-left text-sm whitespace-pre-line font-mono bg-gray-50 p-4 rounded"></div>
     <div id="result" class="mt-4 text-center text-lg font-semibold"></div>
     <div class="overflow-x-auto">
@@ -115,6 +128,7 @@
       if (!file) return;
 
       const reader = new FileReader();
+      const getPercentile = (arr, p) => arr[Math.floor(p / 100 * (arr.length - 1))];
       reader.onload = (e) => {
         const values = parseCSV(e.target.result);
         if (values.length < 2) {
@@ -132,12 +146,40 @@
 
         const kl = klDivergence(values, mu, sigma, binCenters, binWidth, counts);
 
-        const sorted = [...values].sort((a, b) => a - b);
+        const percentiles = [10, 20, 30, 40, 50, 60, 70, 80, 90].map(p => {
+  const sorted = [...values].sort((a, b) => a - b);
+  const index = Math.floor(p / 100 * (sorted.length - 1));
+  return `${p}th: ${sorted[index].toFixed(4)}`;
+}).join("
+");
+
+const sorted = [...values].sort((a, b) => a - b);
 const percentiles = [10, 20, 30, 40, 50, 60, 70, 80, 90].map(p => {
   const index = Math.floor(p / 100 * (sorted.length - 1));
   return `${p}th: ${sorted[index].toFixed(4)}`;
 }).join("
 ");
+const min = sorted[0].toFixed(4);
+const max = sorted[sorted.length - 1].toFixed(4);
+const q1 = sorted[Math.floor(0.25 * (sorted.length - 1))].toFixed(4);
+const q3 = sorted[Math.floor(0.75 * (sorted.length - 1))].toFixed(4);
+
+const sorted = [...values].sort((a, b) => a - b);
+const percentiles = [10, 20, 30, 40, 50, 60, 70, 80, 90].map(p => `${p}th: ${getPercentile(sorted, p).toFixed(4)}`).join("
+");
+const min = sorted[0].toFixed(4);
+const max = sorted[sorted.length - 1].toFixed(4);
+const q1 = getPercentile(sorted, 25).toFixed(4);
+const q3 = getPercentile(sorted, 75).toFixed(4);
+
+const sorted = [...values].sort((a, b) => a - b);
+const getPercentile = (arr, p) => arr[Math.floor(p / 100 * (arr.length - 1))];
+const percentiles = [10, 20, 30, 40, 50, 60, 70, 80, 90].map(p => `${p}th: ${getPercentile(sorted, p).toFixed(4)}`).join("
+");
+const min = sorted[0].toFixed(4);
+const max = sorted[sorted.length - 1].toFixed(4);
+const q1 = getPercentile(sorted, 25).toFixed(4);
+const q3 = getPercentile(sorted, 75).toFixed(4);
 
 const summaryText = `Samples: ${values.length}
 Mean: ${mu.toFixed(4)}
@@ -147,8 +189,14 @@ KL Divergence: ${kl.toFixed(4)}
 Percentiles:
 ${percentiles}
 
+Min: ${min}
+Max: ${max}
+Q1: ${q1}
+Q3: ${q3}
+
 First 10 values:
 ${values.slice(0, 10).map(v => v.toFixed(4)).join(", ")}`;
+        const summaryText = `Samples: ${values.length}\nMean: ${mu.toFixed(4)}\nStandard Deviation: ${sigma.toFixed(4)}\nKL Divergence: ${kl.toFixed(4)}\n\nFirst 10 values:\n${values.slice(0, 10).map(v => v.toFixed(4)).join(", ")}`;
         document.getElementById("summary").textContent = summaryText;
 
         const ctx = document.getElementById("histogram").getContext("2d");
