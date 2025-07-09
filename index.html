@@ -98,14 +98,15 @@
       return a * b;
     }
 
-    function computeHistogram(data, bins = 30) {
-      const min = Math.min(...data);
-      const max = Math.max(...data);
+    function computeHistogram(data, bins = 30, rangeMin = null, rangeMax = null) {
+      const min = rangeMin !== null ? rangeMin : Math.min(...data);
+      const max = rangeMax !== null ? rangeMax : Math.max(...data);
       const binWidth = (max - min) / bins;
       const counts = Array(bins).fill(0);
       const binCenters = [];
 
       data.forEach(x => {
+        if (x < min || x > max) return;
         const i = Math.min(Math.floor((x - min) / binWidth), bins - 1);
         counts[i]++;
       });
@@ -157,12 +158,6 @@
 
         const mu = mean(values);
         const sigma = std(values, mu);
-        const { counts, binCenters, binWidth } = computeHistogram(values);
-        const total = values.length;
-        const normalizedCounts = counts.map(c => c / total);
-        const normalValues = binCenters.map(x => normalPDF(x, mu, sigma) * binWidth);
-        const normalMax = Math.max(...normalValues);
-        const kl = klDivergence(values, mu, sigma, binCenters, binWidth, counts);
 
         const xMaxOption1 = mu + 4 * sigma;
         const xMinOption1 = mu - 4 * sigma;
@@ -170,6 +165,13 @@
         const dataMax = Math.max(...values);
         const xMin = Math.min(xMinOption1, dataMin);
         const xMax = Math.max(xMaxOption1, dataMax);
+
+        const { counts, binCenters, binWidth } = computeHistogram(values, 30, xMin, xMax);
+        const total = values.length;
+        const normalizedCounts = counts.map(c => c / total);
+        const normalValues = binCenters.map(x => normalPDF(x, mu, sigma) * binWidth);
+        const normalMax = Math.max(...normalValues);
+        const kl = klDivergence(values, mu, sigma, binCenters, binWidth, counts);
 
         const p10 = percentile(values, 10);
         const p25 = percentile(values, 25);
