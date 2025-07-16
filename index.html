@@ -218,7 +218,9 @@ export const HTML_CONTENT = `<!DOCTYPE html>
                 setIsAnalyzing(true); setResults(null); setGeneralStats(null); setError('');
                 try {
                     const text = await file.text();
+                    // THIS IS THE FIX: A more robust regex to handle various whitespace characters (spaces, tabs, newlines) and commas.
                     const data = text.trim().split(/[\\s,]+/).map(Number).filter(n => !isNaN(n) && isFinite(n));
+                    
                     if (data.length < 8) { throw new Error("At least 8 valid numerical data points are required."); }
                     if (data.length > 1000000) { throw new Error("Dataset is too large. Please use a file with fewer than 1 million data points."); }
                     
