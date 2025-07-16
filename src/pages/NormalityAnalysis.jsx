@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -56,6 +55,13 @@ export default function NormalityAnalysis() {
 
   const fileInputRef = useRef(null);
 
+  console.log("Component rendered. State:", { 
+    file: !!file, 
+    fileName, 
+    isAnalyzing, 
+    scriptsReady 
+  });
+
   useEffect(() => {
     const scriptUrls = [
       'https://cdn.jsdelivr.net/npm/chart.js',
@@ -63,24 +69,34 @@ export default function NormalityAnalysis() {
       'https://unpkg.com/simple-statistics@7.8.3/dist/simple-statistics.min.js',
     ];
     let loadedCount = 0;
+    console.log("Starting script loading effect...");
 
     const loadScript = (url) => {
       return new Promise((resolve, reject) => {
+        console.log(`Loading script: ${url}`);
         const script = document.createElement('script');
         script.src = url;
         script.onload = () => {
+          console.log(`SUCCESS: Script loaded - ${url}`);
           loadedCount++;
           if (loadedCount === scriptUrls.length) {
+            console.log("All scripts loaded, setting scriptsReady to true.");
             setScriptsReady(true);
           }
           resolve();
         };
-        script.onerror = reject;
+        script.onerror = (err) => {
+          console.error(`ERROR: Failed to load script - ${url}`, err);
+          reject(err);
+        };
         document.head.appendChild(script);
       });
     };
 
-    Promise.all(scriptUrls.map(loadScript)).catch(() => setError("Failed to load analysis scripts. Please refresh the page."));
+    Promise.all(scriptUrls.map(loadScript)).catch(() => {
+        console.error("Caught an error in Promise.all for script loading.");
+        setError("Failed to load analysis scripts. Please refresh the page.")
+    });
   }, []);
 
   const handleFileChange = (e) => {
@@ -101,6 +117,7 @@ export default function NormalityAnalysis() {
   };
   
   const handleAnalyze = async () => {
+    console.log("handleAnalyze function CALLED!"); 
     if (!file || Object.values(selectedTests).every(v => !v)) {
       setError("Please select a file and at least one test to run.");
       return;
