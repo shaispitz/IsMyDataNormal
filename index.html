@@ -29,7 +29,7 @@
         .animate-spin { animation: spin 1s linear infinite; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         .transition-all { transition: all 0.3s ease; }
-        .hover\\:shadow-lg:hover { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+        .hover\:shadow-lg:hover { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
         @media print {
             body { background-color: white !important; margin: 0 !important; padding: 0 !important; }
             .no-print { display: none !important; }
@@ -66,12 +66,12 @@
             return arr;
         };
 
-        // SUPER SIMPLE PARSER - this will work with ANY file format
+        // FIXED PARSER - תיקון הרגקס
         const parseNumbers = (text) => {
-            console.log("🔍 SIMPLE PARSER - Raw text:", text);
+            console.log("🔍 FIXED PARSER - Raw text:", text);
             
-            // Method 1: Just extract all numbers from the text using regex
-            const matches = text.match(/-?\\d+\\.?\\d*/g);
+            // תיקון הרגקס - הסרת backslash נוסף
+            const matches = text.match(/-?\d+\.?\d*/g);
             console.log("🔍 Regex matches found:", matches);
             
             if (matches) {
@@ -269,7 +269,7 @@
                     const text = await file.text();
                     console.log("📄 Starting analysis with file content:", text);
                     
-                    // Use the super simple parser
+                    // Use the fixed parser
                     const data = parseNumbers(text);
                     
                     if (data.length < 8) { 
@@ -401,4 +401,4 @@
 
     </script>
 </body>
-</html>;
+</html>
