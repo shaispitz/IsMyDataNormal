@@ -4,6 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data Normality Analyzer</title>
+    
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-0YV3TYQ023"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-0YV3TYQ023');
+    </script>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
@@ -19,7 +29,7 @@
         .animate-spin { animation: spin 1s linear infinite; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         .transition-all { transition: all 0.3s ease; }
-        .hover\:shadow-lg:hover { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+        .hover\\:shadow-lg:hover { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
         @media print {
             body { background-color: white !important; margin: 0 !important; padding: 0 !important; }
             .no-print { display: none !important; }
@@ -61,7 +71,7 @@
             console.log("🔍 SIMPLE PARSER - Raw text:", text);
             
             // Method 1: Just extract all numbers from the text using regex
-            const matches = text.match(/-?\d+\.?\d*/g);
+            const matches = text.match(/-?\\d+\\.?\\d*/g);
             console.log("🔍 Regex matches found:", matches);
             
             if (matches) {
@@ -246,6 +256,13 @@
                     return; 
                 }
                 
+                // Track analysis start event
+                if (typeof gtag !== 'undefined') {
+                    gtag('event', 'analysis_started', {
+                        'custom_parameter': 'normality_test'
+                    });
+                }
+                
                 setIsAnalyzing(true); setResults(null); setGeneralStats(null); setError('');
                 
                 try {
@@ -315,9 +332,25 @@
                     
                     setResults(newResults);
                     console.log("🎉 Analysis completed successfully!");
+                    
+                    // Track successful analysis
+                    if (typeof gtag !== 'undefined') {
+                        gtag('event', 'analysis_completed', {
+                            'data_points': data.length,
+                            'tests_selected': Object.keys(selectedTests).filter(key => selectedTests[key]).length
+                        });
+                    }
+                    
                 } catch (err) { 
                     console.error("💥 Analysis failed:", err);
-                    setError(err.message); 
+                    setError(err.message);
+                    
+                    // Track analysis error
+                    if (typeof gtag !== 'undefined') {
+                        gtag('event', 'analysis_error', {
+                            'error_message': err.message
+                        });
+                    }
                 } finally { 
                     setIsAnalyzing(false); 
                 }
@@ -368,4 +401,4 @@
 
     </script>
 </body>
-</html>
+</html>;
