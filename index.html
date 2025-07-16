@@ -19,7 +19,7 @@
         .animate-spin { animation: spin 1s linear infinite; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         .transition-all { transition: all 0.3s ease; }
-        .hover\\:shadow-lg:hover { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+        .hover\:shadow-lg:hover { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
         @media print {
             body { background-color: white !important; margin: 0 !important; padding: 0 !important; }
             .no-print { display: none !important; }
@@ -54,6 +54,24 @@
             const step = (max - min) / (count - 1);
             for (let i = 0; i < count; i++) { arr[i] = min + (i * step); }
             return arr;
+        };
+
+        // SUPER SIMPLE PARSER - this will work with ANY file format
+        const parseNumbers = (text) => {
+            console.log("🔍 SIMPLE PARSER - Raw text:", text);
+            
+            // Method 1: Just extract all numbers from the text using regex
+            const matches = text.match(/-?\d+\.?\d*/g);
+            console.log("🔍 Regex matches found:", matches);
+            
+            if (matches) {
+                const numbers = matches.map(Number).filter(n => !isNaN(n) && isFinite(n));
+                console.log("✅ Final numbers:", numbers);
+                return numbers;
+            }
+            
+            console.log("❌ No numbers found");
+            return [];
         };
 
         const calculateAndersonDarling = (sortedData, mu, sigma) => {
@@ -232,26 +250,19 @@
                 
                 try {
                     const text = await file.text();
+                    console.log("📄 Starting analysis with file content:", text);
                     
-                    // New, more robust parsing logic
-                    const cleanedText = text
-                        .replace(/\\r\\n/g, '\\n') // Standardize line breaks to \n
-                        .replace(/,/g, '\\n')    // Replace commas with \n
-                        .replace(/\\s+/g, '\\n'); // Replace any whitespace sequences with a single \n
-
-                    const data = cleanedText
-                        .split('\\n')
-                        .map(s => s.trim())
-                        .filter(s => s !== '') // Remove empty lines that might result from cleaning
-                        .map(Number)
-                        .filter(n => !isNaN(n) && isFinite(n));
-
+                    // Use the super simple parser
+                    const data = parseNumbers(text);
+                    
                     if (data.length < 8) { 
                         throw new Error("At least 8 valid numerical data points are required. Found: " + data.length); 
                     }
                     if (data.length > 1000000) { 
                         throw new Error("Dataset is too large. Please use a file with fewer than 1 million data points."); 
                     }
+                    
+                    console.log("✅ Parsed " + data.length + " numbers successfully:", data.slice(0, 10));
                     
                     const newResults = {};
                     const mu = jStat.mean(data);
@@ -303,7 +314,9 @@
                     }
                     
                     setResults(newResults);
+                    console.log("🎉 Analysis completed successfully!");
                 } catch (err) { 
+                    console.error("💥 Analysis failed:", err);
                     setError(err.message); 
                 } finally { 
                     setIsAnalyzing(false); 
@@ -355,4 +368,4 @@
 
     </script>
 </body>
-</html>;
+</html>
