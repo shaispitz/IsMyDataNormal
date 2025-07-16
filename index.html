@@ -200,21 +200,11 @@
             const fileInputRef = useRef(null);
             const TESTS = { kl: 'KL Divergence', ad: 'Anderson-Darling Test', qq: 'Q-Q Plot', };
 
-            console.log("🚀 Component rendered. State:", { 
-                file: !!file, 
-                fileName, 
-                isAnalyzing, 
-                scriptsReady 
-            });
-
             useEffect(() => { 
-                console.log("🔄 Checking scripts availability...");
                 const checkScripts = () => { 
                     if (window.Chart && window.jStat) { 
-                        console.log("✅ All scripts loaded successfully");
                         setScriptsReady(true); 
                     } else { 
-                        console.log("⏳ Scripts not ready yet, waiting...");
                         setTimeout(checkScripts, 100); 
                     } 
                 }; 
@@ -225,7 +215,6 @@
                 const uploadedFile = e.target.files[0];
                 if (uploadedFile) {
                     if (uploadedFile.size > 50 * 1024 * 1024) { setError("File size cannot exceed 50MB."); return; }
-                    console.log("📁 File selected:", uploadedFile.name, "Size:", uploadedFile.size);
                     setFile(uploadedFile); setFileName(uploadedFile.name); setError('');
                 }
             };
@@ -233,71 +222,36 @@
             const handleExport = () => window.print();
 
             const handleAnalyze = async () => {
-                console.log("🎯 ANALYZE BUTTON CLICKED!");
-                if (!file || Object.values(selectedTests).every(v => !v)) { 
-                    console.log("❌ Missing file or tests");
-                    setError("Please select a file and at least one test to run."); 
-                    return; 
-                }
-                if (!scriptsReady) { 
-                    console.log("❌ Scripts not ready");
-                    setError("Analysis scripts are not ready yet. Please wait a moment."); 
+                if (!file || !scriptsReady) { 
+                    const reason = !file ? "No file selected" : "Scripts not ready";
+                    setError("Cannot analyze. " + reason); 
                     return; 
                 }
                 
-                console.log("🔄 Starting analysis...");
                 setIsAnalyzing(true); setResults(null); setGeneralStats(null); setError('');
                 
                 try {
                     const text = await file.text();
-                    console.log("📖 Raw file content:", JSON.stringify(text));
                     
-                    // Multiple parsing attempts
-                    let data = [];
-                    
-                    // Method 1: Split by any whitespace and/or commas
-                    const method1 = text.trim().split(/[\\s,]+/).map(Number).filter(n => !isNaN(n) && isFinite(n));
-                    console.log("🔍 Method 1 (whitespace/comma split):", method1);
-                    
-                    // Method 2: Split by lines, then by spaces/commas
-                    const lines = text.trim().split(/\\r?\\n/);
-                    console.log("📝 Lines found:", lines);
-                    const method2 = [];
-                    lines.forEach(line => {
-                        const nums = line.trim().split(/[\\s,]+/).map(Number).filter(n => !isNaN(n) && isFinite(n));
-                        method2.push(...nums);
-                    });
-                    console.log("🔍 Method 2 (line by line):", method2);
-                    
-                    // Method 3: Find all numbers using regex
-                    const numberRegex = /-?\\d+(?:\\.\\d+)?/g;
-                    const method3 = (text.match(numberRegex) || []).map(Number).filter(n => !isNaN(n) && isFinite(n));
-                    console.log("🔍 Method 3 (regex extraction):", method3);
-                    
-                    // Use the method that gives us the most numbers
-                    if (method3.length >= method1.length && method3.length >= method2.length) {
-                        data = method3;
-                        console.log("✅ Using method 3 (regex)");
-                    } else if (method2.length >= method1.length) {
-                        data = method2;
-                        console.log("✅ Using method 2 (line by line)");
-                    } else {
-                        data = method1;
-                        console.log("✅ Using method 1 (whitespace/comma)");
-                    }
-                    
-                    console.log("🎯 Final parsed data:", data);
-                    console.log("📊 Number of data points found:", data.length);
-                    
+                    // New, more robust parsing logic
+                    const cleanedText = text
+                        .replace(/\\r\\n/g, '\\n') // Standardize line breaks to \n
+                        .replace(/,/g, '\\n')    // Replace commas with \n
+                        .replace(/\\s+/g, '\\n'); // Replace any whitespace sequences with a single \n
+
+                    const data = cleanedText
+                        .split('\\n')
+                        .map(s => s.trim())
+                        .filter(s => s !== '') // Remove empty lines that might result from cleaning
+                        .map(Number)
+                        .filter(n => !isNaN(n) && isFinite(n));
+
                     if (data.length < 8) { 
-                        console.log("❌ Not enough data points:", data.length);
                         throw new Error("At least 8 valid numerical data points are required. Found: " + data.length); 
                     }
                     if (data.length > 1000000) { 
                         throw new Error("Dataset is too large. Please use a file with fewer than 1 million data points."); 
                     }
-                    
-                    console.log("✅ Data validation passed, proceeding with analysis...");
                     
                     const newResults = {};
                     const mu = jStat.mean(data);
@@ -305,8 +259,6 @@
                     const sortedData = [...data].sort((a, b) => a - b);
                     const minVal = sortedData[0];
                     const maxVal = sortedData[sortedData.length - 1];
-
-                    console.log("📈 Basic stats calculated:", { mu, sigma, minVal, maxVal });
 
                     // General stats
                     const binsForSummary = Math.min(50, Math.max(20, Math.ceil(Math.sqrt(data.length))));
@@ -320,11 +272,8 @@
                     for (let i = 0; i < xDomainForSummary.length; i++) { const x = xDomainForSummary[i]; normalCurveData[i] = { x: x, y: jStat.normal.pdf(x, mu, sigma) * data.length * binWidthForSummary }; }
                     setGeneralStats({ mean: mu, stdDev: sigma, dataSize: data.length, min: minVal, max: maxVal, median: jStat.median(data), distributionData: { histogram: histCountsForSummary.map((count, i) => ({ x: minVal + (i * binWidthForSummary) + (binWidthForSummary / 2), y: count })), normalCurve: normalCurveData, }, });
 
-                    console.log("📊 General stats calculated");
-
                     // Tests
                     if (selectedTests.kl) {
-                        console.log("🔄 Running KL divergence test...");
                         const bins = Math.min(50, Math.ceil(Math.sqrt(data.length)));
                         const binWidth = (maxVal - minVal) > 0 ? (maxVal - minVal) / bins : 1;
                         const counts = new Array(bins).fill(0);
@@ -338,15 +287,11 @@
                         let klDiv = 0;
                         for (let i = 0; i < p.length; i++) { if (p[i] > 0 && q[i] > 0) { klDiv += p[i] * Math.log(p[i] / q[i]); } }
                         newResults.kl = { score: klDiv, mean: mu, stdDev: sigma, dataSize: data.length };
-                        console.log("✅ KL divergence calculated:", klDiv);
                     }
                     if (selectedTests.ad) { 
-                        console.log("🔄 Running Anderson-Darling test...");
                         newResults.ad = { statistic: calculateAndersonDarling(sortedData, mu, sigma) }; 
-                        console.log("✅ Anderson-Darling calculated:", newResults.ad.statistic);
                     }
                     if (selectedTests.qq) {
-                        console.log("🔄 Generating Q-Q plot...");
                         const sampleSize = Math.min(1000, data.length);
                         const step = data.length <= sampleSize ? 1 : Math.floor(data.length / sampleSize);
                         const sampledData = [];
@@ -355,13 +300,10 @@
                         const theoreticalQuantiles = quantiles.map(q => jStat.normal.inv(q, 0, 1));
                         const sampleQuantiles = sampledData.map(val => (val - mu) / sigma);
                         newResults.qq = theoreticalQuantiles.map((tq, i) => ({ x: tq, y: sampleQuantiles[i] }));
-                        console.log("✅ Q-Q plot generated with", newResults.qq.length, "points");
                     }
                     
-                    console.log("🎉 All analyses completed successfully!");
                     setResults(newResults);
                 } catch (err) { 
-                    console.log("💥 ERROR in analysis:", err.message);
                     setError(err.message); 
                 } finally { 
                     setIsAnalyzing(false); 
