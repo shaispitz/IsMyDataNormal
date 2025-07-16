@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -116,7 +117,16 @@ export default function NormalityAnalysis() {
 
     try {
       const text = await file.text();
+      
+      console.log("--- DEBUGGING START ---");
+      console.log("Raw file content received:", text);
+      
       const data = text.trim().split(/[\s,]+/).map(Number).filter(n => !isNaN(n) && isFinite(n));
+
+      console.log("Parsed data array:", data);
+      console.log("Number of data points found:", data.length);
+      console.log("--- DEBUGGING END ---");
+
 
       if (data.length < 8) {
         throw new Error("At least 8 valid numerical data points are required for the tests.");
