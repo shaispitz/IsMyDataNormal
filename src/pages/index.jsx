@@ -1,12 +1,12 @@
 import Layout from "./Layout.jsx";
 
-import Home from "./Home";
+import NormalityAnalysis from "./NormalityAnalysis";
 
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 
 const PAGES = {
     
-    Home: Home,
+    NormalityAnalysis: NormalityAnalysis,
     
 }
 
@@ -32,10 +32,10 @@ function PagesContent() {
         <Layout currentPageName={currentPage}>
             <Routes>            
                 
-                    <Route path="/" element={<Home />} />
+                    <Route path="/" element={<NormalityAnalysis />} />
                 
                 
-                <Route path="/Home" element={<Home />} />
+                <Route path="/NormalityAnalysis" element={<NormalityAnalysis />} />
                 
             </Routes>
         </Layout>
