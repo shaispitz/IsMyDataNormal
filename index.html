@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+export const HTML_CONTENT = `<!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
@@ -29,7 +29,7 @@
         .animate-spin { animation: spin 1s linear infinite; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         .transition-all { transition: all 0.3s ease; }
-        .hover\:shadow-lg:hover { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+        .hover\\:shadow-lg:hover { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
         @media print {
             body { background-color: white !important; margin: 0 !important; padding: 0 !important; }
             .no-print { display: none !important; }
@@ -47,6 +47,108 @@
     <script type="text/babel">
         const { useState, useEffect, useRef } = React;
 
+        // Sample data for demonstration
+        const SAMPLE_DATA = \`-0.182355611
+-0.983451291
+0.291989932
+-1.07963923
+0.260377543
+0.134132128
+-0.652348135
+0.570460102
+-0.433426944
+-0.154206497
+-0.396275351
+-1.75967408
+-0.013507838
+0.753921806
+-0.820427307
+-0.075803435
+-0.369311842
+-1.07313391
+0.317480368
+0.860625069
+0.227573537
+0.913827299
+-0.068984985
+0.96863237
+0.251270131
+0.810828858
+-0.397010447
+0.829680166
+-0.143982518
+-1.462966472
+-0.422179847
+2.14354819
+-0.325303646
+-1.08773702
+2.314992722
+1.184055702
+0.079075159
+0.933101061
+-0.465609903
+-0.761432033
+-0.836436163
+-0.784252334
+0.605152364
+0.382059539
+-1.266270283
+-0.876064963
+1.738203969
+2.046827367
+-0.178506652
+-0.431301989
+-0.324318408
+1.186266637
+0.775810773
+0.715076977
+-1.261169369
+-0.946396857
+-0.77242467
+-0.045252226
+0.800004406
+-1.260620372
+-1.257476519
+-0.849664587
+0.637315097
+-0.277017087
+-0.705835298
+-0.151596093
+-0.908954577
+-0.873090714
+0.207407753
+0.472218803
+0.142840325
+0.54901956
+0.589731805
+1.3567632
+-0.867531333
+-1.088460333
+0.086334862
+0.797331756
+-0.474272666
+2.065181461
+0.268240374
+-1.318422886
+0.345879542
+-1.204007551
+-1.287442798
+1.662571064
+-0.693504332
+1.526905069
+-0.450679447
+0.753424998
+-1.13647044
+-1.067903669
+0.126473615
+0.000228793
+0.521542444
+-0.393714134
+-0.17072958
+1.440458887
+-1.035036912
+-0.395814181\`;
+
         // Icons (simplified SVG versions)
         const Upload = () => React.createElement('svg', { className: 'lucide-icon mr-2', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2' }, React.createElement('path', { d: 'M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4' }), React.createElement('polyline', { points: '7,10 12,15 17,10' }), React.createElement('line', { x1: '12', y1: '15', x2: '12', y2: '3' }));
         const TestTube = () => React.createElement('svg', { className: 'lucide-icon mr-2', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2' }, React.createElement('path', { d: 'M14.5 2h-5l1.5 1.5L9.5 6h5l-1.5-2.5L14.5 2z' }), React.createElement('path', { d: 'M11.5 6L6 21.5c-.5.5-1.5.5-2 0s-.5-1.5 0-2L9.5 6' }), React.createElement('path', { d: 'M15.5 6L21 21.5c.5.5.5 1.5 0 2s-1.5.5-2 0L12.5 6' }));
@@ -56,6 +158,7 @@
         const ListChecks = () => React.createElement('svg', { className: 'lucide-icon', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2' }, React.createElement('path', { d: 'M3 17l2 2 4-4' }), React.createElement('path', { d: 'M3 7l2 2 4-4' }), React.createElement('path', { d: 'M13 6h8' }), React.createElement('path', { d: 'M13 12h8' }), React.createElement('path', { d: 'M13 18h8' }));
         const CheckCircle2 = () => React.createElement('svg', { className: 'lucide-icon', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2' }, React.createElement('circle', { cx: '12', cy: '12', r: '10' }), React.createElement('path', { d: 'M9 12l2 2 4-4' }));
         const XCircle = () => React.createElement('svg', { className: 'lucide-icon', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2' }, React.createElement('circle', { cx: '12', cy: '12', r: '10' }), React.createElement('path', { d: 'M15 9l-6 6' }), React.createElement('path', { d: 'M9 9l6 6' }));
+        const Play = () => React.createElement('svg', { className: 'lucide-icon mr-2', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2' }, React.createElement('polygon', { points: '5,3 19,12 5,21' }));
 
         // Helper functions
         const createSequenceOptimized = (min, max, count) => {
@@ -66,20 +169,16 @@
             return arr;
         };
 
-        // FIXED PARSER - תיקון הרגקס
+        // FIXED PARSER
         const parseNumbers = (text) => {
             console.log("🔍 FIXED PARSER - Raw text:", text);
-            
-            // תיקון הרגקס - הסרת backslash נוסף
             const matches = text.match(/-?\d+\.?\d*/g);
             console.log("🔍 Regex matches found:", matches);
-            
             if (matches) {
                 const numbers = matches.map(Number).filter(n => !isNaN(n) && isFinite(n));
                 console.log("✅ Final numbers:", numbers);
                 return numbers;
             }
-            
             console.log("❌ No numbers found");
             return [];
         };
@@ -100,7 +199,7 @@
         // UI Components
         const Button = ({ children, onClick, disabled, variant = "default", className = "" }) => {
             const baseClass = "inline-flex items-center justify-center px-4 py-2 rounded-md font-medium transition-all focus:outline-none focus:ring-2 focus:ring-offset-2";
-            const variantClass = variant === "outline" ? "border border-gray-300 bg-white text-gray-700 hover:bg-gray-50" : "bg-blue-600 text-white hover:bg-blue-700";
+            const variantClass = variant === "outline" ? "border border-gray-300 bg-white text-gray-700 hover:bg-gray-50" : variant === "secondary" ? "bg-gray-100 text-gray-900 hover:bg-gray-200" : "bg-blue-600 text-white hover:bg-blue-700";
             const disabledClass = disabled ? "opacity-50 cursor-not-allowed" : "";
             return React.createElement('button', { className: [baseClass, variantClass, disabledClass, className].join(' '), onClick: disabled ? undefined : onClick, disabled }, children);
         };
@@ -249,6 +348,81 @@
 
             const handleExport = () => window.print();
 
+            const runAnalysis = (dataText) => {
+                console.log("📄 Starting analysis with data:", dataText.substring(0, 100) + "...");
+                
+                const data = parseNumbers(dataText);
+                
+                if (data.length < 8) { 
+                    throw new Error("At least 8 valid numerical data points are required. Found: " + data.length); 
+                }
+                if (data.length > 1000000) { 
+                    throw new Error("Dataset is too large. Please use a file with fewer than 1 million data points."); 
+                }
+                
+                console.log("✅ Parsed " + data.length + " numbers successfully");
+                
+                const newResults = {};
+                const mu = jStat.mean(data);
+                const sigma = jStat.stdev(data, true);
+                const sortedData = [...data].sort((a, b) => a - b);
+                const minVal = sortedData[0];
+                const maxVal = sortedData[sortedData.length - 1];
+
+                // General stats
+                const binsForSummary = Math.min(50, Math.max(20, Math.ceil(Math.sqrt(data.length))));
+                const binWidthForSummary = (maxVal - minVal) > 0 ? (maxVal - minVal) / binsForSummary : 1;
+                const histCountsForSummary = new Array(binsForSummary).fill(0);
+                for (let i = 0; i < data.length; i++) { const binIndex = Math.min(binsForSummary - 1, Math.floor((data[i] - minVal) / binWidthForSummary)); histCountsForSummary[binIndex]++; }
+                const plotMin = sigma > 0 ? mu - 4 * sigma : minVal - 1;
+                const plotMax = sigma > 0 ? mu + 4 * sigma : maxVal + 1;
+                const xDomainForSummary = createSequenceOptimized(plotMin, plotMax, 200);
+                const normalCurveData = new Array(xDomainForSummary.length);
+                for (let i = 0; i < xDomainForSummary.length; i++) { const x = xDomainForSummary[i]; normalCurveData[i] = { x: x, y: jStat.normal.pdf(x, mu, sigma) * data.length * binWidthForSummary }; }
+                setGeneralStats({ mean: mu, stdDev: sigma, dataSize: data.length, min: minVal, max: maxVal, median: jStat.median(data), distributionData: { histogram: histCountsForSummary.map((count, i) => ({ x: minVal + (i * binWidthForSummary) + (binWidthForSummary / 2), y: count })), normalCurve: normalCurveData, }, });
+
+                // Tests
+                if (selectedTests.kl) {
+                    const bins = Math.min(50, Math.ceil(Math.sqrt(data.length)));
+                    const binWidth = (maxVal - minVal) > 0 ? (maxVal - minVal) / bins : 1;
+                    const counts = new Array(bins).fill(0);
+                    for (let i = 0; i < data.length; i++) { const binIndex = Math.min(bins - 1, Math.floor((data[i] - minVal) / binWidth)); counts[binIndex]++; }
+                    const p = counts.map(count => count / data.length);
+                    const binCenters = new Array(bins);
+                    for (let i = 0; i < bins; i++) { binCenters[i] = minVal + (i * binWidth) + (binWidth / 2); }
+                    const q_unnormalized = binCenters.map(x => jStat.normal.pdf(x, mu, sigma) * binWidth);
+                    const q_sum = q_unnormalized.reduce((a, b) => a + b, 0);
+                    const q = q_sum > 0 ? q_unnormalized.map(val => val / q_sum) : new Array(bins).fill(1 / bins);
+                    let klDiv = 0;
+                    for (let i = 0; i < p.length; i++) { if (p[i] > 0 && q[i] > 0) { klDiv += p[i] * Math.log(p[i] / q[i]); } }
+                    newResults.kl = { score: klDiv, mean: mu, stdDev: sigma, dataSize: data.length };
+                }
+                if (selectedTests.ad) { 
+                    newResults.ad = { statistic: calculateAndersonDarling(sortedData, mu, sigma) }; 
+                }
+                if (selectedTests.qq) {
+                    const sampleSize = Math.min(1000, data.length);
+                    const step = data.length <= sampleSize ? 1 : Math.floor(data.length / sampleSize);
+                    const sampledData = [];
+                    for (let i = 0; i < data.length; i += step) { sampledData.push(sortedData[i]); }
+                    const quantiles = sampledData.map((_, i) => (i + 1 - 0.5) / sampledData.length);
+                    const theoreticalQuantiles = quantiles.map(q => jStat.normal.inv(q, 0, 1));
+                    const sampleQuantiles = sampledData.map(val => (val - mu) / sigma);
+                    newResults.qq = theoreticalQuantiles.map((tq, i) => ({ x: tq, y: sampleQuantiles[i] }));
+                }
+                
+                setResults(newResults);
+                console.log("🎉 Analysis completed successfully!");
+                
+                // Track successful analysis
+                if (typeof gtag !== 'undefined') {
+                    gtag('event', 'analysis_completed', {
+                        'data_points': data.length,
+                        'tests_selected': Object.keys(selectedTests).filter(key => selectedTests[key]).length
+                    });
+                }
+            };
+
             const handleAnalyze = async () => {
                 if (!file || !scriptsReady) { 
                     const reason = !file ? "No file selected" : "Scripts not ready";
@@ -267,80 +441,7 @@
                 
                 try {
                     const text = await file.text();
-                    console.log("📄 Starting analysis with file content:", text);
-                    
-                    // Use the fixed parser
-                    const data = parseNumbers(text);
-                    
-                    if (data.length < 8) { 
-                        throw new Error("At least 8 valid numerical data points are required. Found: " + data.length); 
-                    }
-                    if (data.length > 1000000) { 
-                        throw new Error("Dataset is too large. Please use a file with fewer than 1 million data points."); 
-                    }
-                    
-                    console.log("✅ Parsed " + data.length + " numbers successfully:", data.slice(0, 10));
-                    
-                    const newResults = {};
-                    const mu = jStat.mean(data);
-                    const sigma = jStat.stdev(data, true);
-                    const sortedData = [...data].sort((a, b) => a - b);
-                    const minVal = sortedData[0];
-                    const maxVal = sortedData[sortedData.length - 1];
-
-                    // General stats
-                    const binsForSummary = Math.min(50, Math.max(20, Math.ceil(Math.sqrt(data.length))));
-                    const binWidthForSummary = (maxVal - minVal) > 0 ? (maxVal - minVal) / binsForSummary : 1;
-                    const histCountsForSummary = new Array(binsForSummary).fill(0);
-                    for (let i = 0; i < data.length; i++) { const binIndex = Math.min(binsForSummary - 1, Math.floor((data[i] - minVal) / binWidthForSummary)); histCountsForSummary[binIndex]++; }
-                    const plotMin = sigma > 0 ? mu - 4 * sigma : minVal - 1;
-                    const plotMax = sigma > 0 ? mu + 4 * sigma : maxVal + 1;
-                    const xDomainForSummary = createSequenceOptimized(plotMin, plotMax, 200);
-                    const normalCurveData = new Array(xDomainForSummary.length);
-                    for (let i = 0; i < xDomainForSummary.length; i++) { const x = xDomainForSummary[i]; normalCurveData[i] = { x: x, y: jStat.normal.pdf(x, mu, sigma) * data.length * binWidthForSummary }; }
-                    setGeneralStats({ mean: mu, stdDev: sigma, dataSize: data.length, min: minVal, max: maxVal, median: jStat.median(data), distributionData: { histogram: histCountsForSummary.map((count, i) => ({ x: minVal + (i * binWidthForSummary) + (binWidthForSummary / 2), y: count })), normalCurve: normalCurveData, }, });
-
-                    // Tests
-                    if (selectedTests.kl) {
-                        const bins = Math.min(50, Math.ceil(Math.sqrt(data.length)));
-                        const binWidth = (maxVal - minVal) > 0 ? (maxVal - minVal) / bins : 1;
-                        const counts = new Array(bins).fill(0);
-                        for (let i = 0; i < data.length; i++) { const binIndex = Math.min(bins - 1, Math.floor((data[i] - minVal) / binWidth)); counts[binIndex]++; }
-                        const p = counts.map(count => count / data.length);
-                        const binCenters = new Array(bins);
-                        for (let i = 0; i < bins; i++) { binCenters[i] = minVal + (i * binWidth) + (binWidth / 2); }
-                        const q_unnormalized = binCenters.map(x => jStat.normal.pdf(x, mu, sigma) * binWidth);
-                        const q_sum = q_unnormalized.reduce((a, b) => a + b, 0);
-                        const q = q_sum > 0 ? q_unnormalized.map(val => val / q_sum) : new Array(bins).fill(1 / bins);
-                        let klDiv = 0;
-                        for (let i = 0; i < p.length; i++) { if (p[i] > 0 && q[i] > 0) { klDiv += p[i] * Math.log(p[i] / q[i]); } }
-                        newResults.kl = { score: klDiv, mean: mu, stdDev: sigma, dataSize: data.length };
-                    }
-                    if (selectedTests.ad) { 
-                        newResults.ad = { statistic: calculateAndersonDarling(sortedData, mu, sigma) }; 
-                    }
-                    if (selectedTests.qq) {
-                        const sampleSize = Math.min(1000, data.length);
-                        const step = data.length <= sampleSize ? 1 : Math.floor(data.length / sampleSize);
-                        const sampledData = [];
-                        for (let i = 0; i < data.length; i += step) { sampledData.push(sortedData[i]); }
-                        const quantiles = sampledData.map((_, i) => (i + 1 - 0.5) / sampledData.length);
-                        const theoreticalQuantiles = quantiles.map(q => jStat.normal.inv(q, 0, 1));
-                        const sampleQuantiles = sampledData.map(val => (val - mu) / sigma);
-                        newResults.qq = theoreticalQuantiles.map((tq, i) => ({ x: tq, y: sampleQuantiles[i] }));
-                    }
-                    
-                    setResults(newResults);
-                    console.log("🎉 Analysis completed successfully!");
-                    
-                    // Track successful analysis
-                    if (typeof gtag !== 'undefined') {
-                        gtag('event', 'analysis_completed', {
-                            'data_points': data.length,
-                            'tests_selected': Object.keys(selectedTests).filter(key => selectedTests[key]).length
-                        });
-                    }
-                    
+                    runAnalysis(text);
                 } catch (err) { 
                     console.error("💥 Analysis failed:", err);
                     setError(err.message);
@@ -351,6 +452,32 @@
                             'error_message': err.message
                         });
                     }
+                } finally { 
+                    setIsAnalyzing(false); 
+                }
+            };
+
+            const handleSampleData = () => {
+                if (!scriptsReady) { 
+                    setError("Scripts not ready yet. Please wait a moment."); 
+                    return; 
+                }
+                
+                // Track sample data usage
+                if (typeof gtag !== 'undefined') {
+                    gtag('event', 'sample_data_used', {
+                        'custom_parameter': 'normality_test'
+                    });
+                }
+                
+                setIsAnalyzing(true); setResults(null); setGeneralStats(null); setError('');
+                setFile(null); setFileName('');
+                
+                try {
+                    runAnalysis(SAMPLE_DATA);
+                } catch (err) { 
+                    console.error("💥 Sample analysis failed:", err);
+                    setError(err.message);
                 } finally { 
                     setIsAnalyzing(false); 
                 }
@@ -383,7 +510,10 @@
                                         React.createElement('p', { className: 'text-xs text-slate-500 mt-2' }, 'CSV or text file with numbers, max 50MB.')
                                     )
                                 ),
-                                React.createElement('div', { className: 'mt-6 text-center' }, React.createElement(Button, { onClick: handleAnalyze, disabled: !file || isAnalyzing || !scriptsReady, className: 'px-8 py-3 text-base' }, isAnalyzing ? React.createElement(React.Fragment, {}, React.createElement(Loader2), 'Analyzing...') : React.createElement(React.Fragment, {}, React.createElement(TestTube), 'Analyze')))
+                                React.createElement('div', { className: 'mt-6 flex justify-center gap-4' }, 
+                                    React.createElement(Button, { onClick: handleAnalyze, disabled: !file || isAnalyzing || !scriptsReady, className: 'px-8 py-3 text-base' }, isAnalyzing ? React.createElement(React.Fragment, {}, React.createElement(Loader2), 'Analyzing...') : React.createElement(React.Fragment, {}, React.createElement(TestTube), 'Analyze')),
+                                    React.createElement(Button, { variant: 'secondary', onClick: handleSampleData, disabled: isAnalyzing || !scriptsReady, className: 'px-6 py-3 text-base' }, React.createElement(Play), 'Try Sample Data')
+                                )
                             )
                         ),
                         error && React.createElement(Alert, { variant: 'destructive', className: 'mb-8' }, React.createElement(AlertCircle, { className: 'h-5 w-5' }), React.createElement('div', {}, React.createElement(AlertTitle, {}, 'Error'), React.createElement(AlertDescription, {}, error))),
@@ -401,4 +531,4 @@
 
     </script>
 </body>
-</html>
+</html>`;
