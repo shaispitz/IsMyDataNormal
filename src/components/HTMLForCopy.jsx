@@ -4,6 +4,16 @@ export const HTML_CONTENT = `<!DOCTYPE html>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data Normality Analyzer</title>
+    
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-0YV3TYQ023"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-0YV3TYQ023');
+    </script>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
@@ -12,7 +22,7 @@ export const HTML_CONTENT = `<!DOCTYPE html>
     <script src="https://cdn.jsdelivr.net/npm/jstat@latest/dist/jstat.min.js"></script>
     <script src="https://unpkg.com/simple-statistics@7.8.3/dist/simple-statistics.min.js"></script>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segue UI', Roboto, sans-serif; margin: 0; padding: 0; }
         .shadow-sm { box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); }
         .shadow-md { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
         .shadow-lg { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
@@ -37,6 +47,9 @@ export const HTML_CONTENT = `<!DOCTYPE html>
     <script type="text/babel">
         const { useState, useEffect, useRef } = React;
 
+        // Sample data for demonstration
+        const SAMPLE_DATA = '-0.182355611\\n-0.983451291\\n0.291989932\\n-1.07963923\\n0.260377543\\n0.134132128\\n-0.652348135\\n0.570460102\\n-0.433426944\\n-0.154206497\\n-0.396275351\\n-1.75967408\\n-0.013507838\\n0.753921806\\n-0.820427307\\n-0.075803435\\n-0.369311842\\n-1.07313391\\n0.317480368\\n0.860625069\\n0.227573537\\n0.913827299\\n-0.068984985\\n0.96863237\\n0.251270131\\n0.810828858\\n-0.397010447\\n0.829680166\\n-0.143982518\\n-1.462966472\\n-0.422179847\\n2.14354819\\n-0.325303646\\n-1.08773702\\n2.314992722\\n1.184055702\\n0.079075159\\n0.933101061\\n-0.465609903\\n-0.761432033\\n-0.836436163\\n-0.784252334\\n0.605152364\\n0.382059539\\n-1.266270283\\n-0.876064963\\n1.738203969\\n2.046827367\\n-0.178506652\\n-0.431301989\\n-0.324318408\\n1.186266637\\n0.775810773\\n0.715076977\\n-1.261169369\\n-0.946396857\\n-0.77242467\\n-0.045252226\\n0.800004406\\n-1.260620372\\n-1.257476519\\n-0.849664587\\n0.637315097\\n-0.277017087\\n-0.705835298\\n-0.151596093\\n-0.908954577\\n-0.873090714\\n0.207407753\\n0.472218803\\n0.142840325\\n0.54901956\\n0.589731805\\n1.3567632\\n-0.867531333\\n-1.088460333\\n0.086334862\\n0.797331756\\n-0.474272666\\n2.065181461\\n0.268240374\\n-1.318422886\\n0.345879542\\n-1.204007551\\n-1.287442798\\n1.662571064\\n-0.693504332\\n1.526905069\\n-0.450679447\\n0.753424998\\n-1.13647044\\n-1.067903669\\n0.126473615\\n0.000228793\\n0.521542444\\n-0.393714134\\n-0.17072958\\n1.440458887\\n-1.035036912\\n-0.395814181';
+
         // Icons (simplified SVG versions)
         const Upload = () => React.createElement('svg', { className: 'lucide-icon mr-2', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2' }, React.createElement('path', { d: 'M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4' }), React.createElement('polyline', { points: '7,10 12,15 17,10' }), React.createElement('line', { x1: '12', y1: '15', x2: '12', y2: '3' }));
         const TestTube = () => React.createElement('svg', { className: 'lucide-icon mr-2', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2' }, React.createElement('path', { d: 'M14.5 2h-5l1.5 1.5L9.5 6h5l-1.5-2.5L14.5 2z' }), React.createElement('path', { d: 'M11.5 6L6 21.5c-.5.5-1.5.5-2 0s-.5-1.5 0-2L9.5 6' }), React.createElement('path', { d: 'M15.5 6L21 21.5c.5.5.5 1.5 0 2s-1.5.5-2 0L12.5 6' }));
@@ -46,6 +59,7 @@ export const HTML_CONTENT = `<!DOCTYPE html>
         const ListChecks = () => React.createElement('svg', { className: 'lucide-icon', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2' }, React.createElement('path', { d: 'M3 17l2 2 4-4' }), React.createElement('path', { d: 'M3 7l2 2 4-4' }), React.createElement('path', { d: 'M13 6h8' }), React.createElement('path', { d: 'M13 12h8' }), React.createElement('path', { d: 'M13 18h8' }));
         const CheckCircle2 = () => React.createElement('svg', { className: 'lucide-icon', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2' }, React.createElement('circle', { cx: '12', cy: '12', r: '10' }), React.createElement('path', { d: 'M9 12l2 2 4-4' }));
         const XCircle = () => React.createElement('svg', { className: 'lucide-icon', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2' }, React.createElement('circle', { cx: '12', cy: '12', r: '10' }), React.createElement('path', { d: 'M15 9l-6 6' }), React.createElement('path', { d: 'M9 9l6 6' }));
+        const Play = () => React.createElement('svg', { className: 'lucide-icon mr-2', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2' }, React.createElement('polygon', { points: '5,3 19,12 5,21' }));
 
         // Helper functions
         const createSequenceOptimized = (min, max, count) => {
@@ -54,6 +68,20 @@ export const HTML_CONTENT = `<!DOCTYPE html>
             const step = (max - min) / (count - 1);
             for (let i = 0; i < count; i++) { arr[i] = min + (i * step); }
             return arr;
+        };
+
+        // FIXED PARSER
+        const parseNumbers = (text) => {
+            console.log("🔍 FIXED PARSER - Raw text:", text);
+            const matches = text.match(/-?\\d+\\.?\\d*/g);
+            console.log("🔍 Regex matches found:", matches);
+            if (matches) {
+                const numbers = matches.map(Number).filter(n => !isNaN(n) && isFinite(n));
+                console.log("✅ Final numbers:", numbers);
+                return numbers;
+            }
+            console.log("❌ No numbers found");
+            return [];
         };
 
         const calculateAndersonDarling = (sortedData, mu, sigma) => {
@@ -72,7 +100,7 @@ export const HTML_CONTENT = `<!DOCTYPE html>
         // UI Components
         const Button = ({ children, onClick, disabled, variant = "default", className = "" }) => {
             const baseClass = "inline-flex items-center justify-center px-4 py-2 rounded-md font-medium transition-all focus:outline-none focus:ring-2 focus:ring-offset-2";
-            const variantClass = variant === "outline" ? "border border-gray-300 bg-white text-gray-700 hover:bg-gray-50" : "bg-blue-600 text-white hover:bg-blue-700";
+            const variantClass = variant === "outline" ? "border border-gray-300 bg-white text-gray-700 hover:bg-gray-50" : variant === "secondary" ? "bg-gray-100 text-gray-900 hover:bg-gray-200" : "bg-blue-600 text-white hover:bg-blue-700";
             const disabledClass = disabled ? "opacity-50 cursor-not-allowed" : "";
             return React.createElement('button', { className: [baseClass, variantClass, disabledClass, className].join(' '), onClick: disabled ? undefined : onClick, disabled }, children);
         };
@@ -200,7 +228,16 @@ export const HTML_CONTENT = `<!DOCTYPE html>
             const fileInputRef = useRef(null);
             const TESTS = { kl: 'KL Divergence', ad: 'Anderson-Darling Test', qq: 'Q-Q Plot', };
 
-            useEffect(() => { const checkScripts = () => { if (window.Chart && window.jStat) { setScriptsReady(true); } else { setTimeout(checkScripts, 100); } }; checkScripts(); }, []);
+            useEffect(() => { 
+                const checkScripts = () => { 
+                    if (window.Chart && window.jStat) { 
+                        setScriptsReady(true); 
+                    } else { 
+                        setTimeout(checkScripts, 100); 
+                    } 
+                }; 
+                checkScripts(); 
+            }, []);
 
             const handleFileChange = (e) => {
                 const uploadedFile = e.target.files[0];
@@ -212,66 +249,139 @@ export const HTML_CONTENT = `<!DOCTYPE html>
 
             const handleExport = () => window.print();
 
+            const runAnalysis = (dataText) => {
+                console.log("📄 Starting analysis with data:", dataText.substring(0, 100) + "...");
+                
+                const data = parseNumbers(dataText);
+                
+                if (data.length < 8) { 
+                    throw new Error("At least 8 valid numerical data points are required. Found: " + data.length); 
+                }
+                if (data.length > 1000000) { 
+                    throw new Error("Dataset is too large. Please use a file with fewer than 1 million data points."); 
+                }
+                
+                console.log("✅ Parsed " + data.length + " numbers successfully");
+                
+                const newResults = {};
+                const mu = jStat.mean(data);
+                const sigma = jStat.stdev(data, true);
+                const sortedData = [...data].sort((a, b) => a - b);
+                const minVal = sortedData[0];
+                const maxVal = sortedData[sortedData.length - 1];
+
+                // General stats
+                const binsForSummary = Math.min(50, Math.max(20, Math.ceil(Math.sqrt(data.length))));
+                const binWidthForSummary = (maxVal - minVal) > 0 ? (maxVal - minVal) / binsForSummary : 1;
+                const histCountsForSummary = new Array(binsForSummary).fill(0);
+                for (let i = 0; i < data.length; i++) { const binIndex = Math.min(binsForSummary - 1, Math.floor((data[i] - minVal) / binWidthForSummary)); histCountsForSummary[binIndex]++; }
+                const plotMin = sigma > 0 ? mu - 4 * sigma : minVal - 1;
+                const plotMax = sigma > 0 ? mu + 4 * sigma : maxVal + 1;
+                const xDomainForSummary = createSequenceOptimized(plotMin, plotMax, 200);
+                const normalCurveData = new Array(xDomainForSummary.length);
+                for (let i = 0; i < xDomainForSummary.length; i++) { const x = xDomainForSummary[i]; normalCurveData[i] = { x: x, y: jStat.normal.pdf(x, mu, sigma) * data.length * binWidthForSummary }; }
+                setGeneralStats({ mean: mu, stdDev: sigma, dataSize: data.length, min: minVal, max: maxVal, median: jStat.median(data), distributionData: { histogram: histCountsForSummary.map((count, i) => ({ x: minVal + (i * binWidthForSummary) + (binWidthForSummary / 2), y: count })), normalCurve: normalCurveData, }, });
+
+                // Tests
+                if (selectedTests.kl) {
+                    const bins = Math.min(50, Math.ceil(Math.sqrt(data.length)));
+                    const binWidth = (maxVal - minVal) > 0 ? (maxVal - minVal) / bins : 1;
+                    const counts = new Array(bins).fill(0);
+                    for (let i = 0; i < data.length; i++) { const binIndex = Math.min(bins - 1, Math.floor((data[i] - minVal) / binWidth)); counts[binIndex]++; }
+                    const p = counts.map(count => count / data.length);
+                    const binCenters = new Array(bins);
+                    for (let i = 0; i < bins; i++) { binCenters[i] = minVal + (i * binWidth) + (binWidth / 2); }
+                    const q_unnormalized = binCenters.map(x => jStat.normal.pdf(x, mu, sigma) * binWidth);
+                    const q_sum = q_unnormalized.reduce((a, b) => a + b, 0);
+                    const q = q_sum > 0 ? q_unnormalized.map(val => val / q_sum) : new Array(bins).fill(1 / bins);
+                    let klDiv = 0;
+                    for (let i = 0; i < p.length; i++) { if (p[i] > 0 && q[i] > 0) { klDiv += p[i] * Math.log(p[i] / q[i]); } }
+                    newResults.kl = { score: klDiv, mean: mu, stdDev: sigma, dataSize: data.length };
+                }
+                if (selectedTests.ad) { 
+                    newResults.ad = { statistic: calculateAndersonDarling(sortedData, mu, sigma) }; 
+                }
+                if (selectedTests.qq) {
+                    const sampleSize = Math.min(1000, data.length);
+                    const step = data.length <= sampleSize ? 1 : Math.floor(data.length / sampleSize);
+                    const sampledData = [];
+                    for (let i = 0; i < data.length; i += step) { sampledData.push(sortedData[i]); }
+                    const quantiles = sampledData.map((_, i) => (i + 1 - 0.5) / sampledData.length);
+                    const theoreticalQuantiles = quantiles.map(q => jStat.normal.inv(q, 0, 1));
+                    const sampleQuantiles = sampledData.map(val => (val - mu) / sigma);
+                    newResults.qq = theoreticalQuantiles.map((tq, i) => ({ x: tq, y: sampleQuantiles[i] }));
+                }
+                
+                setResults(newResults);
+                console.log("🎉 Analysis completed successfully!");
+                
+                // Track successful analysis
+                if (typeof gtag !== 'undefined') {
+                    gtag('event', 'analysis_completed', {
+                        'data_points': data.length,
+                        'tests_selected': Object.keys(selectedTests).filter(key => selectedTests[key]).length
+                    });
+                }
+            };
+
             const handleAnalyze = async () => {
-                if (!file || Object.values(selectedTests).every(v => !v)) { setError("Please select a file and at least one test to run."); return; }
-                if (!scriptsReady) { setError("Analysis scripts are not ready yet. Please wait a moment."); return; }
+                if (!file || !scriptsReady) { 
+                    const reason = !file ? "No file selected" : "Scripts not ready";
+                    setError("Cannot analyze. " + reason); 
+                    return; 
+                }
+                
+                // Track analysis start event
+                if (typeof gtag !== 'undefined') {
+                    gtag('event', 'analysis_started', {
+                        'custom_parameter': 'normality_test'
+                    });
+                }
+                
                 setIsAnalyzing(true); setResults(null); setGeneralStats(null); setError('');
+                
                 try {
                     const text = await file.text();
-                    // THIS IS THE FIX: A more robust regex to handle various whitespace characters (spaces, tabs, newlines) and commas.
-                    const data = text.trim().split(/[\\s,]+/).map(Number).filter(n => !isNaN(n) && isFinite(n));
+                    runAnalysis(text);
+                } catch (err) { 
+                    console.error("💥 Analysis failed:", err);
+                    setError(err.message);
                     
-                    if (data.length < 8) { throw new Error("At least 8 valid numerical data points are required."); }
-                    if (data.length > 1000000) { throw new Error("Dataset is too large. Please use a file with fewer than 1 million data points."); }
-                    
-                    const newResults = {};
-                    const mu = jStat.mean(data);
-                    const sigma = jStat.stdev(data, true);
-                    const sortedData = [...data].sort((a, b) => a - b);
-                    const minVal = sortedData[0];
-                    const maxVal = sortedData[sortedData.length - 1];
-
-                    // General stats
-                    const binsForSummary = Math.min(50, Math.max(20, Math.ceil(Math.sqrt(data.length))));
-                    const binWidthForSummary = (maxVal - minVal) > 0 ? (maxVal - minVal) / binsForSummary : 1;
-                    const histCountsForSummary = new Array(binsForSummary).fill(0);
-                    for (let i = 0; i < data.length; i++) { const binIndex = Math.min(binsForSummary - 1, Math.floor((data[i] - minVal) / binWidthForSummary)); histCountsForSummary[binIndex]++; }
-                    const plotMin = sigma > 0 ? mu - 4 * sigma : minVal - 1;
-                    const plotMax = sigma > 0 ? mu + 4 * sigma : maxVal + 1;
-                    const xDomainForSummary = createSequenceOptimized(plotMin, plotMax, 200);
-                    const normalCurveData = new Array(xDomainForSummary.length);
-                    for (let i = 0; i < xDomainForSummary.length; i++) { const x = xDomainForSummary[i]; normalCurveData[i] = { x: x, y: jStat.normal.pdf(x, mu, sigma) * data.length * binWidthForSummary }; }
-                    setGeneralStats({ mean: mu, stdDev: sigma, dataSize: data.length, min: minVal, max: maxVal, median: jStat.median(data), distributionData: { histogram: histCountsForSummary.map((count, i) => ({ x: minVal + (i * binWidthForSummary) + (binWidthForSummary / 2), y: count })), normalCurve: normalCurveData, }, });
-
-                    // Tests
-                    if (selectedTests.kl) {
-                        const bins = Math.min(50, Math.ceil(Math.sqrt(data.length)));
-                        const binWidth = (maxVal - minVal) > 0 ? (maxVal - minVal) / bins : 1;
-                        const counts = new Array(bins).fill(0);
-                        for (let i = 0; i < data.length; i++) { const binIndex = Math.min(bins - 1, Math.floor((data[i] - minVal) / binWidth)); counts[binIndex]++; }
-                        const p = counts.map(count => count / data.length);
-                        const binCenters = new Array(bins);
-                        for (let i = 0; i < bins; i++) { binCenters[i] = minVal + (i * binWidth) + (binWidth / 2); }
-                        const q_unnormalized = binCenters.map(x => jStat.normal.pdf(x, mu, sigma) * binWidth);
-                        const q_sum = q_unnormalized.reduce((a, b) => a + b, 0);
-                        const q = q_sum > 0 ? q_unnormalized.map(val => val / q_sum) : new Array(bins).fill(1 / bins);
-                        let klDiv = 0;
-                        for (let i = 0; i < p.length; i++) { if (p[i] > 0 && q[i] > 0) { klDiv += p[i] * Math.log(p[i] / q[i]); } }
-                        newResults.kl = { score: klDiv, mean: mu, stdDev: sigma, dataSize: data.length };
+                    // Track analysis error
+                    if (typeof gtag !== 'undefined') {
+                        gtag('event', 'analysis_error', {
+                            'error_message': err.message
+                        });
                     }
-                    if (selectedTests.ad) { newResults.ad = { statistic: calculateAndersonDarling(sortedData, mu, sigma) }; }
-                    if (selectedTests.qq) {
-                        const sampleSize = Math.min(1000, data.length);
-                        const step = data.length <= sampleSize ? 1 : Math.floor(data.length / sampleSize);
-                        const sampledData = [];
-                        for (let i = 0; i < data.length; i += step) { sampledData.push(sortedData[i]); }
-                        const quantiles = sampledData.map((_, i) => (i + 1 - 0.5) / sampledData.length);
-                        const theoreticalQuantiles = quantiles.map(q => jStat.normal.inv(q, 0, 1));
-                        const sampleQuantiles = sampledData.map(val => (val - mu) / sigma);
-                        newResults.qq = theoreticalQuantiles.map((tq, i) => ({ x: tq, y: sampleQuantiles[i] }));
-                    }
-                    setResults(newResults);
-                } catch (err) { setError(err.message); } finally { setIsAnalyzing(false); }
+                } finally { 
+                    setIsAnalyzing(false); 
+                }
+            };
+
+            const handleSampleData = () => {
+                if (!scriptsReady) { 
+                    setError("Scripts not ready yet. Please wait a moment."); 
+                    return; 
+                }
+                
+                // Track sample data usage
+                if (typeof gtag !== 'undefined') {
+                    gtag('event', 'sample_data_used', {
+                        'custom_parameter': 'normality_test'
+                    });
+                }
+                
+                setIsAnalyzing(true); setResults(null); setGeneralStats(null); setError('');
+                setFile(null); setFileName('');
+                
+                try {
+                    runAnalysis(SAMPLE_DATA);
+                } catch (err) { 
+                    console.error("💥 Sample analysis failed:", err);
+                    setError(err.message);
+                } finally { 
+                    setIsAnalyzing(false); 
+                }
             };
 
             return React.createElement('div', { className: 'bg-slate-50 min-h-screen p-4 md:p-8' },
@@ -301,7 +411,10 @@ export const HTML_CONTENT = `<!DOCTYPE html>
                                         React.createElement('p', { className: 'text-xs text-slate-500 mt-2' }, 'CSV or text file with numbers, max 50MB.')
                                     )
                                 ),
-                                React.createElement('div', { className: 'mt-6 text-center' }, React.createElement(Button, { onClick: handleAnalyze, disabled: !file || isAnalyzing || !scriptsReady, className: 'px-8 py-3 text-base' }, isAnalyzing ? React.createElement(React.Fragment, {}, React.createElement(Loader2), 'Analyzing...') : React.createElement(React.Fragment, {}, React.createElement(TestTube), 'Analyze')))
+                                React.createElement('div', { className: 'mt-6 flex justify-center gap-4' }, 
+                                    React.createElement(Button, { onClick: handleAnalyze, disabled: !file || isAnalyzing || !scriptsReady, className: 'px-8 py-3 text-base' }, isAnalyzing ? React.createElement(React.Fragment, {}, React.createElement(Loader2), 'Analyzing...') : React.createElement(React.Fragment, {}, React.createElement(TestTube), 'Analyze')),
+                                    React.createElement(Button, { variant: 'secondary', onClick: handleSampleData, disabled: isAnalyzing || !scriptsReady, className: 'px-6 py-3 text-base' }, React.createElement(Play), 'Try Sample Data')
+                                )
                             )
                         ),
                         error && React.createElement(Alert, { variant: 'destructive', className: 'mb-8' }, React.createElement(AlertCircle, { className: 'h-5 w-5' }), React.createElement('div', {}, React.createElement(AlertTitle, {}, 'Error'), React.createElement(AlertDescription, {}, error))),
